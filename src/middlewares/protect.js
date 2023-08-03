@@ -36,7 +36,6 @@ export async function protect(req, res, next) {
 export async function protectOwner(req, res, next) {
   try {
     const { authorization } = req.headers;
-    console.log(authorization, req.headers);
     if (!authorization) {
       return res.status(401).json({
         message: "You are not authorized",
@@ -48,7 +47,6 @@ export async function protectOwner(req, res, next) {
       const user = await BusinessOwner.findOne({
         where: { email: decoded.email },
       });
-      console.log(user);
       if (!user) {
         return res.status(401).json({
           message: "You are not authorized",
