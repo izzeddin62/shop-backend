@@ -33,10 +33,40 @@ export async function createUser(req, res) {
   });
 }
 
-export function getUser(req, res) {
-  const { user } = req;
-  res.status(200).json({
-    message: "User retrieved successfully",
-    user,
-  });
+export async function signin(req, res) {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+    const returnedUser = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
+    const token = jwt.sign(returnedUser, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
+    return res.status(200).json({
+      message: "User logged in successfully",
+      user: returnedUser,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
 }
