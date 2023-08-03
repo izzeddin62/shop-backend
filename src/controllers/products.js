@@ -43,3 +43,32 @@ export async function getAllBusinessWithProducts(req, res) {
     });
   }
 }
+
+export async function orderProducts(req, res) {
+  try {
+    const { products } = req.body;
+    const productsToOrder = await Product.findAll({
+      where: { id: products },
+    });
+    const isOneOutOfStock = productsToOrder.some(
+      (product) => product.quantity === 0,
+    );
+    if (isOneOutOfStock) {
+      return res.status(400).json({
+        message: "One of the products is out of stock",
+      });
+    }
+    productsToOrder.forEach(async (product) => {
+      await product.update({ quantity: product.quantity - 1 });
+    });
+    return res.status(201).json({
+      message: "Products ordered successfully",
+      products: productsToOrder,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+}
