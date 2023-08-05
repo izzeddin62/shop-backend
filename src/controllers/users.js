@@ -27,6 +27,7 @@ export async function createUser(req, res) {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      type: "customer",
     };
     const token = jwt.sign(returnedUser, process.env.SECRET_KEY, {
       expiresIn: "1d",
@@ -64,6 +65,7 @@ export async function signin(req, res) {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      type: "customer",
     };
     const token = jwt.sign(returnedUser, process.env.SECRET_KEY, {
       expiresIn: "1d",
@@ -105,6 +107,7 @@ export async function createBusinessOwner(req, res) {
       lastName: user.lastName,
       email: user.email,
       shopName: user.shopName,
+      type: "businessOwner",
     };
     const token = jwt.sign(returnedUser, process.env.SECRET_KEY, {
       expiresIn: "1d",
@@ -143,6 +146,7 @@ export async function signinBusinessOwner(req, res) {
       lastName: user.lastName,
       email: user.email,
       shopName: user.shopName,
+      type: "businessOwner",
     };
     const token = jwt.sign(returnedUser, process.env.SECRET_KEY, {
       expiresIn: "1d",
@@ -156,6 +160,49 @@ export async function signinBusinessOwner(req, res) {
     return res.status(500).json({
       message: "Something went wrong",
       error: error.message,
+    });
+  }
+}
+
+export async function getUser(req, res) {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(401).json({
+      message: "You are not authorized",
+    });
+  }
+  const token = authorization.split(" ")[1];
+  console.log(token, "token");
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded, "decoded");
+    const { id, type } = decoded;
+    let user = null;
+    if (type === "customer") {
+      user = await User.findOne({ where: { id } });
+    }
+    if (type === "businessOwner") {
+      user = await BusinessOwner.findOne({ where: { id } });
+    }
+    if (!user) {
+      return res.status(401).json({
+        message: "You are not authorized",
+      });
+    }
+    const returnedUser = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      shopName: user.shopName,
+      type,
+    };
+    return res.status(200).json({
+      user: returnedUser,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "You are not authorized",
     });
   }
 }

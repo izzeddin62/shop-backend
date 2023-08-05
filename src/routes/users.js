@@ -4,6 +4,7 @@ import {
   signin,
   createBusinessOwner,
   signinBusinessOwner,
+  getUser,
 } from "../controllers/users";
 import {
   validateBusinessOwnerSignup,
@@ -16,5 +17,6 @@ router.post("/signup", validateSignup, createUser);
 router.post("/signin", signin);
 router.post("/owner/signup", validateBusinessOwnerSignup, createBusinessOwner);
 router.post("/owner/signin", signinBusinessOwner);
+router.get("/user", getUser);
 
 export default router;
