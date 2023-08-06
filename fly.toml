@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for rough-wave-2704 on 2023-08-06T10:23:50+02:00
+# fly.toml app configuration file generated for autumn-wildflower-5567 on 2023-08-06T11:29:26+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "rough-wave-2704"
+app = "autumn-wildflower-5567"
 primary_region = "cdg"
 
 [build]

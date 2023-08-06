@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "migrate:dev": "npx sequelize-cli db:migrate",
-    "start": "node src/index.js",
-    "build": "npx babel-cli src --out-dir dist"
+    "start": "node build/index.js",
+    "build": "npx babel src --out-dir build"
   },
   "repository": {
     "type": "git",
