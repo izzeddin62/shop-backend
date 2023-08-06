@@ -48,7 +48,7 @@ export async function orderProducts(req, res) {
   try {
     const { products } = req.body;
     const productsToOrder = await Product.findAll({
-      where: { id: products },
+      where: { id: products.map((el) => el[0]) },
     });
     const isOneOutOfStock = productsToOrder.some(
       (product) => product.quantity === 0,
@@ -58,8 +58,8 @@ export async function orderProducts(req, res) {
         message: "One of the products is out of stock",
       });
     }
-    productsToOrder.forEach(async (product) => {
-      await product.update({ quantity: product.quantity - 1 });
+    productsToOrder.forEach(async (product, index) => {
+      await product.update({ quantity: product.quantity - products[index][1] });
     });
     return res.status(201).json({
       message: "Products ordered successfully",
